@@ -18,13 +18,13 @@ Implementace [Conwayovy hry života](https://en.wikipedia.org/wiki/Conway%27s_Ga
  
 ## O projektu
  
-Conwayova hra života je buněčný automat, ve kterém se na dvourozměrné mřížce vyvíjí populace buněk podle předem daných pravidel. Každá buňka může být **živá** (černá) nebo **mrtvá** (bílá) a její stav v dalším kroku závisí na počtu živých sousedů.
+Conwayova hra života je buněčný automat, ve kterém se na dvourozměrné mřížce vyvíjí populace buněk podle předem daných pravidel. Každá buňka může být **živá** (žlutá) nebo **mrtvá** (bílá) a její stav v dalším kroku závisí na počtu živých sousedů.
  
 Tento projekt implementuje plnohodnotnou grafickou simulaci s:
 - dynamicky generovanou (zdánlivě nekonečnou) mřížkou,
 - interaktivním zadáváním počátečního stavu myší,
 - real-time animací generací,
-- možností pausy, změny rychlosti a načítání vzorů.
+- možností pausy, změny rychlosti a zoomování.
 ---
  
 ## Pravidla hry
@@ -138,6 +138,6 @@ X X
  
 - **Reprezentace mřížky** – mřížka je uložena jako množina (`set`) souřadnic živých buněk. Díky tomu je paměťová náročnost úměrná pouze počtu živých buněk, nikoli celkové ploše.
 - **Algoritmus generace** – pro každou generaci se procházejí živé buňky a jejich sousedé, a dle pravidel se vypočítá nový stav.
-- **Vykreslování** – vykresluje se pouze viditelná část mřížky; bílá = mrtvá buňka, černá = živá buňka.
+- **Vykreslování** – vykresluje se pouze viditelná část mřížky; bílá = mrtvá buňka, žlutá = živá buňka.
 - **Viewport** – offset zobrazení se mění při pohybu, čímž vzniká iluze nekonečné plochy.
 ---
