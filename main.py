@@ -71,7 +71,6 @@ def main():
                 if event.button == 1:
                     curr_col, curr_row = mouse_x // TILE_SIZE, mouse_y // TILE_SIZE
                     position = (curr_col, curr_row)
-                    print(position)
                     if position in filled_cells:
                         filled_cells.remove(position)
                         emptied_cells.add(position)
@@ -80,7 +79,7 @@ def main():
                     needs_redraw = True
 
                 if event.button == 3:
-                    print("right:",mouse_x,mouse_y)
+                    pass
 
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
@@ -92,6 +91,10 @@ def main():
                     emptied_cells = set()
                     needs_redraw = True
                     playing = False
+                if event.key == pg.K_UP and update_freq > 45:
+                    update_freq -= 30
+                if event.key == pg.K_DOWN and update_freq < 120:
+                    update_freq += 30
     
         if needs_redraw:
             empty_cells(emptied_cells)
