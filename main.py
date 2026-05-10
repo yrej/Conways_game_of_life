@@ -1,5 +1,6 @@
 import pygame as pg
 from grid_update import update_grid
+from overlay import HelpOverlay
 
 pg.init()
 
@@ -37,7 +38,9 @@ def empty_grid():
 def main():
     running = True
     playing = False
+    show_help = True
     needs_redraw = True
+
 
     count = 0
     update_freq = 60
@@ -47,6 +50,8 @@ def main():
 
     empty_grid()
 
+    overlay = HelpOverlay(WIDTH, HEIGHT)
+    
     while running:
         delta_time = clock.tick(FPS)
         delta_time = max(0.001, min(0.1, delta_time))
@@ -65,6 +70,12 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
+            if show_help:
+                if event.type == pg.MOUSEBUTTONDOWN or event.type == pg.KEYDOWN:
+                    show_help = False
+                    needs_redraw = True
+                continue
+
             if event.type == pg.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pg.mouse.get_pos()
 
@@ -101,9 +112,12 @@ def main():
             fill_cells(filled_cells)
             emptied_cells = set()
             screen.blit(grid, (0, 0))
-            pg.display.flip()
+            if show_help:
+                overlay.draw(screen)
             needs_redraw = False
-
+        
+        
+        pg.display.flip()
     pg.quit()
 
 if __name__ == '__main__':
