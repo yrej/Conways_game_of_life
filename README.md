@@ -101,7 +101,6 @@ python main.py
 |---|---|
 | `Space` | Pauza / Spuštění simulace |
 | `↑` / `↓` | Zvýšení / snížení rychlosti |
-| `Arrow keys` | Pohyb po mřížce |
 | `C` | Vymazání plochy |
 |`Esc` | Ukončení aplikace |
  
