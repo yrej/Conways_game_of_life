@@ -1,6 +1,6 @@
 from pygame import image, Surface, display
-from info_panel import create_info_panel
-from constants import WIDTH, GRID_WIDTH, GRID_HEIGHT, TILE_SIZE, UPPER_MARGIN
+from scripts.info_panel import create_info_panel
+from scripts.constants import WIDTH, GRID_WIDTH, GRID_HEIGHT, TILE_SIZE, UPPER_MARGIN
 
 def fill_cells(positions,grid,filled_tile_img):
     for pos in positions:

@@ -1,5 +1,5 @@
 from pygame import Surface, SRCALPHA
-from constants import WIDTH, UPPER_MARGIN, INFO_MARGIN as MARGIN, COLOR_GREY as GREY
+from scripts.constants import WIDTH, UPPER_MARGIN, INFO_MARGIN as MARGIN, COLOR_GREY as GREY
 
 def create_info_panel(playing, slowed_by,text_images):
     panel = Surface((WIDTH,UPPER_MARGIN),SRCALPHA)

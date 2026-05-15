@@ -1,8 +1,8 @@
 import pygame as pg
-from grid_update import update_grid
-from overlay import HelpOverlay
-from drawing import draw
-from constants import UPPER_MARGIN, WIDTH, HEIGHT, TILE_SIZE, FPS
+from scripts.grid_update import update_grid
+from scripts.overlay import HelpOverlay
+from scripts.drawing import draw
+from scripts.constants import UPPER_MARGIN, WIDTH, HEIGHT, TILE_SIZE, FPS
 
 pg.init()
 
