@@ -15,6 +15,8 @@ class HelpOverlay:
         self.lines = [
             ("Conway's Game of Life",           self.font_title, (255, 255, 255)),
             ("",                                self.font_text,  (200, 200, 200)),
+            ("Cell can be placed or removed only when paused",self.font_text,  (200, 200, 200)),
+            ("",                                self.font_text,  (200, 200, 200)),
             ("Left click    – place / remove cell",  self.font_text,  (200, 200, 200)),
             ("Space        – pause / resume",        self.font_text,  (200, 200, 200)),
             ("↑ / ↓           – speed up / slow down",  self.font_text,  (200, 200, 200)),

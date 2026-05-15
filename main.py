@@ -6,14 +6,13 @@ from info_panel import create_info_panel
 pg.init()
 
 UPPER_MARGIN = 50
-WIDTH, HEIGHT = 960,960 + UPPER_MARGIN
+WIDTH, HEIGHT = 1000,1000 + UPPER_MARGIN
 TILE_SIZE = 40
 GRID_WIDTH, GRID_HEIGHT = WIDTH // TILE_SIZE, HEIGHT - UPPER_MARGIN // TILE_SIZE 
 FPS = 60
 
 screen = pg.display.set_mode((WIDTH,HEIGHT - UPPER_MARGIN))
 clock = pg.time.Clock()
-delta_time = 0.1
 
 empty_tile_img = pg.image.load('images/empty_tile.png').convert()
 filled_tile_img = pg.image.load('images/filled_tile.png').convert()
@@ -23,7 +22,8 @@ grid = pg.Surface((WIDTH,HEIGHT))
 def fill_cells(positions):
     for pos in positions:
         col, row = pos
-        grid.blit(filled_tile_img, (col * TILE_SIZE, row * TILE_SIZE))
+        if 0 <= col < GRID_WIDTH and 0 <= row < GRID_HEIGHT:
+            grid.blit(filled_tile_img, (col * TILE_SIZE, row * TILE_SIZE))
 
 def empty_cells(positions):
     for pos in positions:
@@ -50,23 +50,21 @@ def main():
     emptied_cells = set()
 
     empty_grid()
+    pg.display.set_caption("Conways game of life")
 
     overlay = HelpOverlay(WIDTH, HEIGHT)
     
     while running:
-        delta_time = clock.tick(FPS)
-        delta_time = max(0.001, min(0.1, delta_time))
+        clock.tick(FPS)
 
         if playing:
             count += 1
-        if count >= 15 + speed * 30:
+        if count >= 10 + speed * 30:
             count = 0
             emptied_cells = filled_cells
             filled_cells = update_grid(filled_cells, GRID_WIDTH, GRID_HEIGHT)
             emptied_cells = emptied_cells - filled_cells 
             needs_redraw = True
-
-        pg.display.set_caption("Playing" if playing else "Paused")
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
