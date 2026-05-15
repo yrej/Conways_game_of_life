@@ -2,7 +2,37 @@ from pygame import Surface, SRCALPHA
 from scripts.constants import WIDTH, UPPER_MARGIN, INFO_MARGIN as MARGIN, COLOR_GREY as GREY
 
 def create_info_panel(playing : bool, slowed_by : int,text_images : dict[str, Surface]) -> Surface:
-    panel = Surface((WIDTH,UPPER_MARGIN),SRCALPHA)
+    """Vytvoří informační panel zobrazený v horní části okna.
+
+    Vykreslí panel s aktuálním stavem simulace (běží / pozastaveno) a
+    aktuální rychlostí simulace. Panel je vykreslen jako povrch s šedým pozadím.
+    Nakteré je vykreslován stylyzovaný text
+
+    Rychlost simulace je určena hodnotou ``slowed_by``:
+
+    +------------+----------+
+    | slowed_by  | rychlost |
+    +============+==========+
+    | 0          | 3x       |
+    +------------+----------+
+    | 1          | 2x       |
+    +------------+----------+
+    | 2          | 1x       |
+    +------------+----------+
+    | 3          | 0.5x     |
+    +------------+----------+
+
+    Args:
+        playing: ``True`` pokud simulace běží, ``False`` pokud je pozastavena.
+        slowed_by: Úroveň zpomalení simulace v rozsahu 0–3.
+        text_images: Slovník povrchů s textovými obrázky. Očekávané klíče:
+            ``"playing"``, ``"paused"``, ``"speed"``, ``"point_five"``,
+            ``"one"``, ``"two"``, ``"three"``.
+
+    Returns:
+        Surface: Vykreslený informační panel připravený k zobrazení na obrazovce.
+    """
+    panel = Surface((WIDTH,UPPER_MARGIN))
     panel.fill(GREY)
 
     if playing:

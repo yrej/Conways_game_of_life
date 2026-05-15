@@ -2,13 +2,38 @@ from pygame import font, Surface, SRCALPHA
 from scripts.constants import WIDTH, HEIGHT
 
 class HelpOverlay:
+    """Poloprůhledná nápověda zobrazená při spuštění programu.
+
+    Překryje celou obrazovku tmavým poloprůhledným pozadím a uprostřed
+    zobrazí panel s ovládáním programu. Nápověda zmizí po kliknutí myší
+    nebo stisku libovolné klávesy.
+
+    Textové povrchy jsou předvykresleny při inicializaci v metodě
+    ``_build()``, aby bylo vykreslování v metodě ``draw()`` co nejrychlejší.
+
+    Args:
+        width: Šířka obrazovky v pixelech.
+        height: Výška obrazovky v pixelech.
+        visible: ``True`` pokud má být nápověda zobrazena.
+        rendered: Seznam předvykreslených textových povrchů a jejich výšek.
+    """
     def __init__(self) -> None:
+        """Inicializuje overlay a předvykreslí textové povrchy."""
         self.width = WIDTH
         self.height = HEIGHT
         self.visible = True
         self._build()
 
     def _build(self) -> None:
+        """Připraví fonty a předvykreslí všechny textové řádky.
+
+        Vytvoří seznam trojic (text, font, barva) definující obsah nápovědy
+        a předvykreslí každý řádek do Surface, aby metoda ``draw()``
+        nemusela renderovat text při každém snímku.
+
+        Returns:
+            None
+        """
         self.font_title = font.SysFont("Arial", 28, bold=True)
         self.font_text  = font.SysFont("Arial", 18)
 
@@ -31,6 +56,22 @@ class HelpOverlay:
         ]
     
     def draw(self, screen : Surface) -> None:
+        """Vykreslí nápovědu na obrazovku.
+
+        Pokud není nápověda viditelná (``self.visible == False``),
+        metoda se okamžitě vrátí bez jakéhokoliv vykreslování.
+
+        Vykreslení probíhá ve třech krocích:
+            1. Poloprůhledné ztmavení celé obrazovky.
+            2. Tmavý obdélníkový panel uprostřed obrazovky.
+            3. Předvykreslené textové řádky uvnitř panelu.
+
+        Args:
+            screen: Hlavní zobrazovací povrch, na který se nápověda vykreslí.
+
+        Returns:
+            None
+        """
         if not self.visible:
             return
 

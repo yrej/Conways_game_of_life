@@ -27,13 +27,38 @@ text_images = {
 }
 
 def empty_grid() -> None:
-    size_x, size_y = pg.display.get_surface().get_size()
+    """Vyplní celý povrch mřížky prázdnými dlaždicemi.
+
+    Prochází povrch displeje po krocích velikosti TILE_SIZE a na každou
+    pozici vykreslí obrázek prázdné dlaždice, čímž efektivně vymaže mřížku.
+
+    Returns:
+        None
+    """
+    size_x, size_y = WIDTH, HEIGHT - UPPER_MARGIN
 
     for x in range(0, size_x, TILE_SIZE):
         for y in range(0, size_y, TILE_SIZE):
             grid.blit(tile_img["empty"], (x, y))
 
 def main():
+    """Hlavní vstupní bod simulace Conwayovy hry života.
+
+    Inicializuje herní stav, spravuje hlavní smyčku událostí, zpracovává
+    vstup uživatele a každý snímek posouvá v simulaci vpřed.
+
+    Smyčka zajišťuje následující:
+        - Posun simulace o jednu generaci vpřed.
+        - Přepínání jednotlivých buněk levým kliknutím (pouze při pauze).
+        - Pozastavení a spuštění simulace mezerníkem.
+        - Vymazání mřížky klávesou C.
+        - Úpravu rychlosti simulace šipkami nahoru/dolů.
+        - Zavření nápovědy kliknutím nebo stiskem libovolné klávesy.
+
+    Returns:
+        None
+    """
+        
     running = True
     playing = False
     show_help = True
