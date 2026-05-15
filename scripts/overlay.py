@@ -1,17 +1,16 @@
-# overlay.py
-import pygame as pg
+from pygame import font, Surface, SRCALPHA
 from scripts.constants import WIDTH, HEIGHT
 
 class HelpOverlay:
-    def __init__(self):
+    def __init__(self) -> None:
         self.width = WIDTH
         self.height = HEIGHT
         self.visible = True
         self._build()
 
-    def _build(self):
-        self.font_title = pg.font.SysFont("Arial", 28, bold=True)
-        self.font_text  = pg.font.SysFont("Arial", 18)
+    def _build(self) -> None:
+        self.font_title = font.SysFont("Arial", 28, bold=True)
+        self.font_text  = font.SysFont("Arial", 18)
 
         self.lines = [
             ("Conway's Game of Life",           self.font_title, (255, 255, 255)),
@@ -31,12 +30,12 @@ class HelpOverlay:
             for text, font, color in self.lines
         ]
     
-    def draw(self, screen):
+    def draw(self, screen : Surface) -> None:
         if not self.visible:
             return
 
         # dim the background
-        overlay = pg.Surface((self.width, self.height), pg.SRCALPHA)
+        overlay = Surface((self.width, self.height), SRCALPHA)
         overlay.fill((0, 0, 0, 180))
         screen.blit(overlay, (0, 0))
 
@@ -45,7 +44,7 @@ class HelpOverlay:
         box_x = (self.width  - box_w) // 2
         box_y = (self.height - box_h) // 2
 
-        box = pg.Surface((box_w, box_h), pg.SRCALPHA)
+        box = Surface((box_w, box_h), SRCALPHA)
         box.fill((30, 30, 30, 220))
         screen.blit(box, (box_x, box_y))
 

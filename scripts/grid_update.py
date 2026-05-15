@@ -1,6 +1,6 @@
 from scripts.constants import GRID_HEIGHT, GRID_WIDTH
 
-def update_grid(positions, margin = 2):
+def update_grid(positions : set[tuple[int,int]], margin : int = 2) -> set[tuple[int,int]]:
     all_neighbours = set()
     new_positions = set()
 
@@ -21,7 +21,7 @@ def update_grid(positions, margin = 2):
     
     return new_positions
 
-def get_neighbours(position, margin):
+def get_neighbours(position : set[tuple[int,int]], margin : int) -> list[tuple[int,int]]:
     x,y = position
     neighbours = []
     for dx in [-1, 0, 1]:

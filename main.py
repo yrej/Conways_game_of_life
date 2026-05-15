@@ -26,7 +26,7 @@ text_images = {
     "three" : pg.image.load("images/number_three.png").convert_alpha()
 }
 
-def empty_grid():
+def empty_grid() -> None:
     size_x, size_y = pg.display.get_surface().get_size()
 
     for x in range(0, size_x, TILE_SIZE):
