@@ -1,41 +1,37 @@
 import pygame as pg
 from grid_update import update_grid
 from overlay import HelpOverlay
-from info_panel import create_info_panel
+from drawing import draw
+from constants import UPPER_MARGIN, WIDTH, HEIGHT, TILE_SIZE, FPS
 
 pg.init()
-
-UPPER_MARGIN = 50
-WIDTH, HEIGHT = 1000,1000 + UPPER_MARGIN
-TILE_SIZE = 40
-GRID_WIDTH, GRID_HEIGHT = WIDTH // TILE_SIZE, HEIGHT - UPPER_MARGIN // TILE_SIZE 
-FPS = 60
 
 screen = pg.display.set_mode((WIDTH,HEIGHT - UPPER_MARGIN))
 clock = pg.time.Clock()
 
-empty_tile_img = pg.image.load('images/empty_tile.png').convert()
-filled_tile_img = pg.image.load('images/filled_tile.png').convert()
+tile_img = {
+    "empty" : pg.image.load('images/empty_tile.png').convert(),
+    "filled" : pg.image.load('images/filled_tile.png').convert()
+}
 
 grid = pg.Surface((WIDTH,HEIGHT))
 
-def fill_cells(positions):
-    for pos in positions:
-        col, row = pos
-        if 0 <= col < GRID_WIDTH and 0 <= row < GRID_HEIGHT:
-            grid.blit(filled_tile_img, (col * TILE_SIZE, row * TILE_SIZE))
-
-def empty_cells(positions):
-    for pos in positions:
-        col, row = pos
-        grid.blit(empty_tile_img, (col * TILE_SIZE, row * TILE_SIZE))
+text_images = {
+    "playing" : pg.image.load("images/playing_text.png").convert_alpha(),
+    "paused" : pg.image.load("images/paused_text.png").convert_alpha(),
+    "speed" : pg.image.load("images/speed_text.png").convert_alpha(),
+    "point_five" : pg.image.load("images/number_point_five.png").convert_alpha(),
+    "one" : pg.image.load("images/number_one.png").convert_alpha(),
+    "two" : pg.image.load("images/number_two.png").convert_alpha(),
+    "three" : pg.image.load("images/number_three.png").convert_alpha()
+}
 
 def empty_grid():
     size_x, size_y = pg.display.get_surface().get_size()
 
     for x in range(0, size_x, TILE_SIZE):
         for y in range(0, size_y, TILE_SIZE):
-            grid.blit(empty_tile_img, (x, y))
+            grid.blit(tile_img["empty"], (x, y))
 
 def main():
     running = True
@@ -52,7 +48,7 @@ def main():
     empty_grid()
     pg.display.set_caption("Conways game of life")
 
-    overlay = HelpOverlay(WIDTH, HEIGHT)
+    overlay = HelpOverlay()
     
     while running:
         clock.tick(FPS)
@@ -62,7 +58,7 @@ def main():
         if count >= 10 + speed * 30:
             count = 0
             emptied_cells = filled_cells
-            filled_cells = update_grid(filled_cells, GRID_WIDTH, GRID_HEIGHT)
+            filled_cells = update_grid(filled_cells)
             emptied_cells = emptied_cells - filled_cells 
             needs_redraw = True
 
@@ -110,13 +106,7 @@ def main():
                     needs_redraw = True
     
         if needs_redraw:
-            empty_cells(emptied_cells)
-            fill_cells(filled_cells)
-            emptied_cells = set()
-            screen.blit(create_info_panel(WIDTH,UPPER_MARGIN,playing,speed),(0,0))
-            screen.blit(grid, (0, UPPER_MARGIN))
-            if show_help:
-                overlay.draw(screen)
+            draw(screen,grid,tile_img,text_images,emptied_cells,filled_cells,playing,speed,show_help,overlay)
             needs_redraw = False
         
         

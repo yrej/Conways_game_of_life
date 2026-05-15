@@ -1,10 +1,11 @@
 # overlay.py
 import pygame as pg
+from constants import WIDTH, HEIGHT
 
 class HelpOverlay:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
+    def __init__(self):
+        self.width = WIDTH
+        self.height = HEIGHT
         self.visible = True
         self._build()
 
