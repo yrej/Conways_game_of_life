@@ -1,15 +1,17 @@
 import pygame as pg
 from grid_update import update_grid
 from overlay import HelpOverlay
+from info_panel import create_info_panel
 
 pg.init()
 
-WIDTH, HEIGHT = 920,920
+UPPER_MARGIN = 50
+WIDTH, HEIGHT = 960,960 + UPPER_MARGIN
 TILE_SIZE = 40
-GRID_WIDTH, GRID_HEIGHT = WIDTH // TILE_SIZE, HEIGHT // TILE_SIZE 
+GRID_WIDTH, GRID_HEIGHT = WIDTH // TILE_SIZE, HEIGHT - UPPER_MARGIN // TILE_SIZE 
 FPS = 60
 
-screen = pg.display.set_mode((WIDTH,HEIGHT))
+screen = pg.display.set_mode((WIDTH,HEIGHT - UPPER_MARGIN))
 clock = pg.time.Clock()
 delta_time = 0.1
 
@@ -41,9 +43,8 @@ def main():
     show_help = True
     needs_redraw = True
 
-
     count = 0
-    update_freq = 60
+    speed = 2
 
     filled_cells = set()
     emptied_cells = set()
@@ -58,7 +59,7 @@ def main():
 
         if playing:
             count += 1
-        if count >= update_freq:
+        if count >= 15 + speed * 30:
             count = 0
             emptied_cells = filled_cells
             filled_cells = update_grid(filled_cells, GRID_WIDTH, GRID_HEIGHT)
@@ -79,8 +80,8 @@ def main():
             if event.type == pg.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pg.mouse.get_pos()
 
-                if event.button == 1:
-                    curr_col, curr_row = mouse_x // TILE_SIZE, mouse_y // TILE_SIZE
+                if event.button == 1 and not playing:
+                    curr_col, curr_row = mouse_x // TILE_SIZE, (mouse_y - UPPER_MARGIN) // TILE_SIZE
                     position = (curr_col, curr_row)
                     if position in filled_cells:
                         filled_cells.remove(position)
@@ -95,6 +96,7 @@ def main():
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     playing = not playing
+                    needs_redraw = True
                 if event.key == pg.K_c:
                     empty_grid()
                     count = 0
@@ -102,16 +104,19 @@ def main():
                     emptied_cells = set()
                     needs_redraw = True
                     playing = False
-                if event.key == pg.K_UP and update_freq > 45:
-                    update_freq -= 30
-                if event.key == pg.K_DOWN and update_freq < 120:
-                    update_freq += 30
+                if event.key == pg.K_UP and speed > 0:
+                   speed -= 1
+                   needs_redraw = True
+                if event.key == pg.K_DOWN and speed < 3:
+                    speed += 1
+                    needs_redraw = True
     
         if needs_redraw:
             empty_cells(emptied_cells)
             fill_cells(filled_cells)
             emptied_cells = set()
-            screen.blit(grid, (0, 0))
+            screen.blit(create_info_panel(WIDTH,UPPER_MARGIN,playing,speed),(0,0))
+            screen.blit(grid, (0, UPPER_MARGIN))
             if show_help:
                 overlay.draw(screen)
             needs_redraw = False
