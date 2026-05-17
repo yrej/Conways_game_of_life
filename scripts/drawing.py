@@ -1,6 +1,33 @@
-from pygame import image, Surface, display
+from __future__ import annotations
+
+from pygame import  Surface
 from scripts.info_panel import create_info_panel
-from scripts.constants import WIDTH, GRID_WIDTH, GRID_HEIGHT, TILE_SIZE, UPPER_MARGIN
+from scripts.constants import WIDTH,HEIGHT, GRID_WIDTH, GRID_HEIGHT, TILE_SIZE, UPPER_MARGIN
+
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from scripts.overlay import HelpOverlay
+
+def empty_grid(grid : Surface,tile_img : dict[str, Surface]) -> None:
+    """Vyplní celý povrch mřížky prázdnými dlaždicemi.
+
+    Prochází povrch displeje po krocích velikosti TILE_SIZE a na každou
+    pozici vykreslí obrázek prázdné dlaždice, čímž efektivně vymaže mřížku.
+
+    Args:
+        grid: Povrch mřížky, na který se buňky vykreslují.
+        tile_img: Slovník obrázků dlaždic s klíči ``"empty"`` a ``"filled"``.
+    
+    Returns:
+        None
+    """
+    size_x, size_y = WIDTH, HEIGHT - UPPER_MARGIN
+
+    for x in range(0, size_x, TILE_SIZE):
+        for y in range(0, size_y, TILE_SIZE):
+            grid.blit(tile_img["empty"], (x, y))
+
 
 def fill_cells(positions : set[tuple[int,int]],grid : Surface, filled_tile_img : Surface) -> None:
     """Vykreslí živé buňky na mřížku.
@@ -41,7 +68,16 @@ def empty_cells(positions : set[tuple[int,int]],grid : Surface,empty_tile_img : 
         col, row = pos
         grid.blit(empty_tile_img, (col * TILE_SIZE, row * TILE_SIZE))
 
-def draw(screen : Surface,grid : Surface,tile_img : dict[str, Surface],text_images : dict[str, Surface],emptied_cells : set[tuple[int,int]], filled_cells : set[tuple[int,int]], playing : bool,slowed_by : int,show_help : bool,overlay) -> None:
+def draw(screen : Surface,
+         grid : Surface,
+         tile_img : dict[str, Surface],
+         text_images : dict[str, Surface],
+         emptied_cells : set[tuple[int,int]], 
+         filled_cells : set[tuple[int,int]], 
+         playing : bool,
+         slowed_by : int,
+         show_help : bool,
+         overlay : HelpOverlay = None) -> None:
     """Vykreslí celý aktuální snímek na obrazovku.
 
     Aktualizuje mřížku podle změněných buněk, vykreslí informační panel
@@ -69,4 +105,7 @@ def draw(screen : Surface,grid : Surface,tile_img : dict[str, Surface],text_imag
     screen.blit(create_info_panel(playing,slowed_by,text_images),(0,0))
     screen.blit(grid, (0, UPPER_MARGIN))
     if show_help:
-        overlay.draw(screen)
+        if overlay != None:
+            overlay.draw(screen)
+        else:
+            raise AttributeError("Byl poslán ``show_help`` jako true s prázdným overlay")

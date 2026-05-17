@@ -1,6 +1,6 @@
 from scripts.constants import GRID_HEIGHT, GRID_WIDTH
 
-def update_grid(positions : set[tuple[int,int]], margin : int = 2) -> set[tuple[int,int]]:
+def update_grid(positions : set[tuple[int,int]], hor_margin : int = 2 + GRID_WIDTH, ver_margin : int = 2 + GRID_HEIGHT) -> set[tuple[int,int]]:
     """Vypočítá novou generaci buněk podle pravidel Conwayovy hry života.
 
     Prochází všechny živé buňky a jejich sousedy a podle následujících
@@ -22,7 +22,7 @@ def update_grid(positions : set[tuple[int,int]], margin : int = 2) -> set[tuple[
     new_positions = set()
 
     for pos in positions:
-        neighbours = get_neighbours(pos,margin)
+        neighbours = get_neighbours(pos,hor_margin,ver_margin)
         all_neighbours.update(neighbours)
 
         neighbours = list(filter(lambda x: x in positions, neighbours))
@@ -31,14 +31,14 @@ def update_grid(positions : set[tuple[int,int]], margin : int = 2) -> set[tuple[
             new_positions.add(pos)
     
     for pos in all_neighbours:
-        neighbours = list(filter(lambda x: x in positions, get_neighbours(pos,margin)))
+        neighbours = list(filter(lambda x: x in positions, get_neighbours(pos,hor_margin,ver_margin)))
 
         if len(neighbours) == 3:
             new_positions.add(pos)
     
     return new_positions
 
-def get_neighbours(position : set[tuple[int,int]], margin : int) -> list[tuple[int,int]]:
+def get_neighbours(position : set[tuple[int,int]], hor_margin : int, ver_margin : int) -> list[tuple[int,int]]:
     """Vrátí seznam všech sousedů dané buňky.
 
     Prochází všech 8 okolních pozic a vrátí ty, které leží uvnitř
@@ -55,10 +55,10 @@ def get_neighbours(position : set[tuple[int,int]], margin : int) -> list[tuple[i
     x,y = position
     neighbours = []
     for dx in [-1, 0, 1]:
-        if x + dx < -margin or x + dx >= GRID_WIDTH + margin:continue
+        if x + dx < -hor_margin or x + dx >= GRID_WIDTH + hor_margin:continue
         
         for dy in [-1, 0, 1]:
-            if y + dy < -margin or y + dy >= GRID_HEIGHT + margin:continue
+            if y + dy < -ver_margin or y + dy >= GRID_HEIGHT + ver_margin:continue
             if dx == 0 and dy == 0: continue
 
             neighbours.append((x + dx, y + dy))

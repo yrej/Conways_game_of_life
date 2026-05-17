@@ -1,12 +1,13 @@
 import pygame as pg
 from scripts.grid_update import update_grid
 from scripts.overlay import HelpOverlay
-from scripts.drawing import draw
+from scripts.drawing import draw, empty_grid
+from scripts.viewport_adjust import draw_new_viewport
 from scripts.constants import UPPER_MARGIN, WIDTH, HEIGHT, TILE_SIZE, FPS
 
 pg.init()
 
-screen = pg.display.set_mode((WIDTH,HEIGHT - UPPER_MARGIN))
+screen = pg.display.set_mode((WIDTH,HEIGHT))
 clock = pg.time.Clock()
 
 tile_img = {
@@ -14,7 +15,7 @@ tile_img = {
     "filled" : pg.image.load('images/filled_tile.png').convert()
 }
 
-grid = pg.Surface((WIDTH,HEIGHT))
+grid = pg.Surface((WIDTH,HEIGHT - UPPER_MARGIN))
 
 text_images = {
     "playing" : pg.image.load("images/playing_text.png").convert_alpha(),
@@ -25,21 +26,6 @@ text_images = {
     "two" : pg.image.load("images/number_two.png").convert_alpha(),
     "three" : pg.image.load("images/number_three.png").convert_alpha()
 }
-
-def empty_grid() -> None:
-    """Vyplní celý povrch mřížky prázdnými dlaždicemi.
-
-    Prochází povrch displeje po krocích velikosti TILE_SIZE a na každou
-    pozici vykreslí obrázek prázdné dlaždice, čímž efektivně vymaže mřížku.
-
-    Returns:
-        None
-    """
-    size_x, size_y = WIDTH, HEIGHT - UPPER_MARGIN
-
-    for x in range(0, size_x, TILE_SIZE):
-        for y in range(0, size_y, TILE_SIZE):
-            grid.blit(tile_img["empty"], (x, y))
 
 def main():
     """Hlavní vstupní bod simulace Conwayovy hry života.
@@ -63,14 +49,19 @@ def main():
     playing = False
     show_help = True
     needs_redraw = True
+    dragging = False
+    play_b4_drag = False
 
     count = 0
     speed = 2
 
+    offset_x, offset_y = 0, 0
+    last_mouse_pos = (0,0)
+
     filled_cells = set()
     emptied_cells = set()
 
-    empty_grid()
+    empty_grid(grid,tile_img)
     pg.display.set_caption("Conways game of life")
 
     overlay = HelpOverlay()
@@ -100,7 +91,8 @@ def main():
                 mouse_x, mouse_y = pg.mouse.get_pos()
 
                 if event.button == 1 and not playing:
-                    curr_col, curr_row = mouse_x // TILE_SIZE, (mouse_y - UPPER_MARGIN) // TILE_SIZE
+                    curr_col = mouse_x // TILE_SIZE + offset_x
+                    curr_row = (mouse_y - UPPER_MARGIN) // TILE_SIZE + offset_y
                     position = (curr_col, curr_row)
                     if position in filled_cells:
                         filled_cells.remove(position)
@@ -110,30 +102,56 @@ def main():
                     needs_redraw = True
 
                 if event.button == 3:
-                    pass
+                    dragging = True
+                    last_mouse_pos = pg.mouse.get_pos()
+                    if playing:
+                        playing = False
+                        play_b4_drag = True
+            
+            if event.type == pg.MOUSEBUTTONUP:
+                if event.button == 3:
+                    dragging = False
+                    if play_b4_drag: 
+                        playing = True
+                        play_b4_drag = False
+
+            if event.type == pg.MOUSEMOTION:
+                if dragging:
+                    mx,my = pg.mouse.get_pos()
+                    dx = last_mouse_pos[0] - mx
+                    dy = last_mouse_pos[1] - my
+                    offset_x += dx // TILE_SIZE
+                    offset_y += dy // TILE_SIZE
+                    last_mouse_pos = (mx + dx % TILE_SIZE, my + dy % TILE_SIZE)
 
             if event.type == pg.KEYDOWN:
-                if event.key == pg.K_SPACE:
-                    playing = not playing
-                    needs_redraw = True
-                if event.key == pg.K_c:
-                    empty_grid()
-                    count = 0
-                    filled_cells = set()
-                    emptied_cells = set()
-                    needs_redraw = True
-                    playing = False
                 if event.key == pg.K_UP and speed > 0:
                    speed -= 1
                    needs_redraw = True
                 if event.key == pg.K_DOWN and speed < 3:
                     speed += 1
                     needs_redraw = True
-    
+                
+                if dragging:continue
+                if event.key == pg.K_SPACE:
+                    playing = not playing
+                    needs_redraw = True
+                if event.key == pg.K_r:
+                    empty_grid(grid,tile_img)
+                    count = 0
+                    filled_cells = set()
+                    emptied_cells = set()
+                    offset_x,offset_y = 0,0
+                    needs_redraw = True
+                    playing = False
+        
+        if offset_x != 0 or offset_y != 0:
+            draw_new_viewport(screen,grid,tile_img,text_images,filled_cells,playing,speed,offset_x,offset_y)
+            needs_redraw = False
+
         if needs_redraw:
             draw(screen,grid,tile_img,text_images,emptied_cells,filled_cells,playing,speed,show_help,overlay)
             needs_redraw = False
-        
         
         pg.display.flip()
     pg.quit()
