@@ -47,6 +47,7 @@ class HelpOverlay:
             ("Space        – pause / resume",        self.font_text,  (200, 200, 200)),
             ("↑ / ↓           – speed up / slow down",  self.font_text,  (200, 200, 200)),
             ("R               – clear the grid and return to start",        self.font_text,  (200, 200, 200)),
+            ("M               – to swap between light and dark mode (only when paused)",        self.font_text,  (200, 200, 200)),
             ("Press any key or click to start", self.font_text,  (255, 220, 50)),
         ]
 

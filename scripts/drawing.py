@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from scripts.overlay import HelpOverlay
 
-def empty_grid(grid : Surface,tile_img : dict[str, Surface]) -> None:
+def empty_grid(grid : Surface,tile_img : dict[str, Surface],mode : str) -> None:
     """Vyplní celý povrch mřížky prázdnými dlaždicemi.
 
     Prochází povrch displeje po krocích velikosti TILE_SIZE a na každou
@@ -18,6 +18,7 @@ def empty_grid(grid : Surface,tile_img : dict[str, Surface]) -> None:
     Args:
         grid: Povrch mřížky, na který se buňky vykreslují.
         tile_img: Slovník obrázků dlaždic s klíči ``"empty"`` a ``"filled"``.
+        mode : string s klíči ``"empty_light"`` a ``"empty_dark"`` pro slovník tile_img
     
     Returns:
         None
@@ -26,7 +27,7 @@ def empty_grid(grid : Surface,tile_img : dict[str, Surface]) -> None:
 
     for x in range(0, size_x, TILE_SIZE):
         for y in range(0, size_y, TILE_SIZE):
-            grid.blit(tile_img["empty"], (x, y))
+            grid.blit(tile_img[mode], (x, y))
 
 
 def fill_cells(positions : set[tuple[int,int]],grid : Surface, filled_tile_img : Surface) -> None:
@@ -71,6 +72,7 @@ def empty_cells(positions : set[tuple[int,int]],grid : Surface,empty_tile_img : 
 def draw(screen : Surface,
          grid : Surface,
          tile_img : dict[str, Surface],
+         mode : str,
          text_images : dict[str, Surface],
          emptied_cells : set[tuple[int,int]], 
          filled_cells : set[tuple[int,int]], 
@@ -88,6 +90,7 @@ def draw(screen : Surface,
         screen: Hlavní zobrazovací povrch.
         grid: Povrch mřížky se stavem buněk.
         tile_img: Slovník obrázků dlaždic s klíči ``"empty"`` a ``"filled"``.
+        mode : string s klíči ``"empty_light"`` a ``"empty_dark"`` pro slovník tile_img
         text_images: Slovník obrázků textů pro informační panel.
         emptied_cells: Množina buněk, které byly v této generaci zabity.
         filled_cells: Množina aktuálně živých buněk.
@@ -99,10 +102,10 @@ def draw(screen : Surface,
     Returns:
         None
     """
-    empty_cells(emptied_cells,grid,tile_img["empty"])
+    empty_cells(emptied_cells,grid,tile_img[mode])
     fill_cells(filled_cells,grid,tile_img["filled"])
     emptied_cells = set()
-    screen.blit(create_info_panel(playing,slowed_by,text_images),(0,0))
+    screen.blit(create_info_panel(playing,slowed_by,text_images,tile_img,mode),(0,0))
     screen.blit(grid, (0, UPPER_MARGIN))
     if show_help:
         if overlay != None:

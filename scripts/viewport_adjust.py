@@ -1,6 +1,5 @@
 from __future__ import annotations
 from scripts.drawing import empty_grid,draw
-from scripts.constants import TILE_SIZE
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -30,6 +29,7 @@ def cell_to_screen(filled_cells : set[tuple[int,int]], offset_x : int, offset_y 
 def draw_new_viewport(screen : Surface,
          grid : Surface,
          tile_img : dict[str, Surface],
+         mode : str,
          text_images : dict[str, Surface], 
          filled_cells : set[tuple[int,int]], 
          playing : bool,
@@ -46,6 +46,7 @@ def draw_new_viewport(screen : Surface,
         screen: Hlavní zobrazovací povrch.
         grid: Povrch mřížky se stavem buněk.
         tile_img: Slovník obrázků dlaždic s klíči ``"empty"`` a ``"filled"``.
+        mode : string s klíči ``"empty_light"`` a ``"empty_dark"`` pro slovník tile_img
         text_images: Slovník obrázků textů pro informační panel.
         emptied_cells: Množina buněk, které byly v této generaci zabity.
         filled_cells: Množina aktuálně živých buněk.
@@ -58,5 +59,5 @@ def draw_new_viewport(screen : Surface,
         None
     """
     
-    empty_grid(grid,tile_img)
-    draw(screen,grid,tile_img,text_images,set(),cell_to_screen(filled_cells,offset_x,offset_y),playing,slowed_by,False)
+    empty_grid(grid,tile_img,mode)
+    draw(screen,grid,tile_img,mode,text_images,set(),cell_to_screen(filled_cells,offset_x,offset_y),playing,slowed_by,False)

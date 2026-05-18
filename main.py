@@ -11,7 +11,8 @@ screen = pg.display.set_mode((WIDTH,HEIGHT))
 clock = pg.time.Clock()
 
 tile_img = {
-    "empty" : pg.image.load('images/empty_tile.png').convert(),
+    "empty_light" : pg.image.load('images/empty_tile_light.png').convert(),
+    "empty_dark" : pg.image.load('images/empty_tile_dark.png').convert(),
     "filled" : pg.image.load('images/filled_tile.png').convert()
 }
 
@@ -20,6 +21,7 @@ grid = pg.Surface((WIDTH,HEIGHT - UPPER_MARGIN))
 text_images = {
     "playing" : pg.image.load("images/playing_text.png").convert_alpha(),
     "paused" : pg.image.load("images/paused_text.png").convert_alpha(),
+    "mode" : pg.image.load("images/mode_text.png").convert_alpha(),
     "speed" : pg.image.load("images/speed_text.png").convert_alpha(),
     "point_five" : pg.image.load("images/number_point_five.png").convert_alpha(),
     "one" : pg.image.load("images/number_one.png").convert_alpha(),
@@ -51,6 +53,7 @@ def main():
     needs_redraw = True
     dragging = False
     play_b4_drag = False
+    mode = "empty_light"
 
     count = 0
     speed = 2
@@ -61,7 +64,7 @@ def main():
     filled_cells = set()
     emptied_cells = set()
 
-    empty_grid(grid,tile_img)
+    empty_grid(grid,tile_img,mode)
     pg.display.set_caption("Conways game of life")
 
     overlay = HelpOverlay()
@@ -132,12 +135,20 @@ def main():
                     speed += 1
                     needs_redraw = True
                 
+                if event.key == pg.K_m and not playing:
+                    if mode == "empty_dark":
+                        mode = "empty_light"
+                    elif mode == "empty_light":
+                        mode = "empty_dark"
+                    empty_grid(grid,tile_img,mode)
+                    needs_redraw = True
+
                 if dragging:continue
                 if event.key == pg.K_SPACE:
                     playing = not playing
                     needs_redraw = True
                 if event.key == pg.K_r:
-                    empty_grid(grid,tile_img)
+                    empty_grid(grid,tile_img,mode)
                     count = 0
                     filled_cells = set()
                     emptied_cells = set()
@@ -146,11 +157,11 @@ def main():
                     playing = False
         
         if offset_x != 0 or offset_y != 0:
-            draw_new_viewport(screen,grid,tile_img,text_images,filled_cells,playing,speed,offset_x,offset_y)
+            draw_new_viewport(screen,grid,tile_img,mode,text_images,filled_cells,playing,speed,offset_x,offset_y)
             needs_redraw = False
 
         if needs_redraw:
-            draw(screen,grid,tile_img,text_images,emptied_cells,filled_cells,playing,speed,show_help,overlay)
+            draw(screen,grid,tile_img,mode,text_images,emptied_cells,filled_cells,playing,speed,show_help,overlay)
             needs_redraw = False
         
         pg.display.flip()
