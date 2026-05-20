@@ -3,7 +3,8 @@ from scripts.grid_update import update_grid
 from scripts.overlay import HelpOverlay
 from scripts.drawing import draw, empty_grid
 from scripts.viewport_adjust import draw_new_viewport
-from scripts.constants import UPPER_MARGIN, WIDTH, HEIGHT, TILE_SIZE, FPS
+from scripts.load_presets import preset_to_screen
+from scripts.constants import UPPER_MARGIN, WIDTH, HEIGHT, TILE_SIZE, FPS, COLOR_LIGHT_GREY as GREY, COLOR_WHITE as WHITE,COLOR_YELLOW as YELLOW
 
 pg.init()
 
@@ -28,6 +29,22 @@ text_images = {
     "two" : pg.image.load("images/number_two.png").convert_alpha(),
     "three" : pg.image.load("images/number_three.png").convert_alpha()
 }
+
+help_overlay_text =[
+    ("Conway's Game of Life",                                                         "title", WHITE),
+    ("",                                                                               "text",  GREY),
+    ("Cell can be placed or removed only when paused",                                 "text",  GREY),
+    ("",                                                                               "text",  GREY),
+    ("Left click                    – place / remove cell",                            "text",  GREY),
+    ("Hold right button and drag    – move the grid",                                  "text",  GREY),
+    ("Space                         – pause / resume",                                 "text",  GREY),
+    ("↑ / ↓                         – speed up / slow down",                           "text",  GREY),
+    ("R                             – clear the grid and return to start",             "text",  GREY),
+    ("M                             – swap between light and dark mode (only paused)", "text",  GREY),
+    ("I                             – show this help",                                 "text",  GREY),
+    ("1,2,3,4                       – spawns in order (right glider, left glider, block and blinker)","text",  GREY),
+    ("Press any key or click to start",                                 "text",  YELLOW),
+]
 
 def main():
     """Hlavní vstupní bod simulace Conwayovy hry života.
@@ -67,7 +84,7 @@ def main():
     empty_grid(grid,tile_img,mode)
     pg.display.set_caption("Conways game of life")
 
-    overlay = HelpOverlay()
+    help_overlay = HelpOverlay(help_overlay_text,show_help)
     
     while running:
         clock.tick(FPS)
@@ -134,6 +151,25 @@ def main():
                 if event.key == pg.K_DOWN and speed < 3:
                     speed += 1
                     needs_redraw = True
+                if event.key == pg.K_i:
+                    show_help = True
+                    needs_redraw = True
+                if event.key == pg.K_1:
+                    for item in preset_to_screen("right_glider",filled_cells,emptied_cells,offset_x,offset_y):
+                        filled_cells.add(item)
+                    needs_redraw = True
+                if event.key == pg.K_2:
+                    for item in preset_to_screen("left_glider",filled_cells,emptied_cells,offset_x,offset_y):
+                        filled_cells.add(item)
+                    needs_redraw = True
+                if event.key == pg.K_3:
+                    for item in preset_to_screen("Block",filled_cells,emptied_cells,offset_x,offset_y):
+                        filled_cells.add(item)
+                    needs_redraw = True
+                if event.key == pg.K_4:
+                    for item in preset_to_screen("Blinker",filled_cells,emptied_cells,offset_x,offset_y):
+                        filled_cells.add(item)
+                    needs_redraw = True
                 
                 if event.key == pg.K_m and not playing:
                     if mode == "empty_dark":
@@ -161,7 +197,7 @@ def main():
             needs_redraw = False
 
         if needs_redraw:
-            draw(screen,grid,tile_img,mode,text_images,emptied_cells,filled_cells,playing,speed,show_help,overlay)
+            draw(screen,grid,tile_img,mode,text_images,emptied_cells,filled_cells,playing,speed,show_help,help_overlay)
             needs_redraw = False
         
         pg.display.flip()

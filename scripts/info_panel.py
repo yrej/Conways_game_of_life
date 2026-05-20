@@ -1,5 +1,5 @@
 from pygame import Surface
-from scripts.constants import WIDTH, UPPER_MARGIN, INFO_MARGIN as MARGIN, COLOR_GREY as GREY
+from scripts.constants import WIDTH, UPPER_MARGIN, INFO_MARGIN as MARGIN, COLOR_DARK_GREY as GREY
 
 def create_info_panel(playing : bool, slowed_by : int,text_images : dict[str, Surface],tile_img : dict[str, Surface],mode : str) -> Surface:
     """Vytvoří informační panel zobrazený v horní části okna.

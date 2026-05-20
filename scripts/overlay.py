@@ -2,59 +2,60 @@ from pygame import font, Surface, SRCALPHA
 from scripts.constants import WIDTH, HEIGHT
 
 class HelpOverlay:
-    """Poloprůhledná nápověda zobrazená při spuštění programu.
+    """Poloprůhledný overlay zobrazený přes celou obrazovku.
 
     Překryje celou obrazovku tmavým poloprůhledným pozadím a uprostřed
-    zobrazí panel s ovládáním programu. Nápověda zmizí po kliknutí myší
+    zobrazí panel s předaným textem. Overlay zmizí po kliknutí myší
     nebo stisku libovolné klávesy.
 
     Textové povrchy jsou předvykresleny při inicializaci v metodě
     ``_build()``, aby bylo vykreslování v metodě ``draw()`` co nejrychlejší.
 
     Args:
+        lines: Seznam trojic ``(text, styl, barva)`` definující obsah panelu.
+               Styl může být ``"title"`` nebo ``"text"``.
         width: Šířka obrazovky v pixelech.
         height: Výška obrazovky v pixelech.
-        visible: ``True`` pokud má být nápověda zobrazena.
+        visible: ``True`` pokud má být overlay zobrazen.
         rendered: Seznam předvykreslených textových povrchů a jejich výšek.
     """
-    def __init__(self) -> None:
-        """Inicializuje overlay a předvykreslí textové povrchy."""
+    def __init__(self,lines: list[tuple[str, str, tuple[int, int, int]]],visibility : bool) -> None:
+        """Inicializuje overlay a předvykreslí textové povrchy.
+        Args:
+            lines: Seznam trojic ``(text, styl, barva)``, kde styl je
+                   ``"title"`` (tučný, 28 px) nebo ``"text"`` (18 px)
+                   a barva je RGB trojice, např. ``(255, 255, 255)``.
+            visibility: bool zda má být overlay při inicializaci
+        """
         self.width = WIDTH
         self.height = HEIGHT
-        self.visible = True
+        self.lines = lines
+        self.visible = visibility
         self._build()
 
     def _build(self) -> None:
         """Připraví fonty a předvykreslí všechny textové řádky.
 
-        Vytvoří seznam trojic (text, font, barva) definující obsah nápovědy
-        a předvykreslí každý řádek do Surface, aby metoda ``draw()``
+        Vytvoří interní fonty ``_font_title`` a ``_font_text`` a předvykreslí
+        každý řádek z ``self.lines`` do Surface, aby metoda ``draw()``
         nemusela renderovat text při každém snímku.
+
+        Výsledek je uložen do ``self.rendered`` jako seznam dvojic
+        ``(Surface, výška_řádku)``.
 
         Returns:
             None
         """
-        self.font_title = font.SysFont("Arial", 28, bold=True)
-        self.font_text  = font.SysFont("Arial", 18)
-
-        self.lines = [
-            ("Conway's Game of Life",           self.font_title, (255, 255, 255)),
-            ("",                                self.font_text,  (200, 200, 200)),
-            ("Cell can be placed or removed only when paused",self.font_text,  (200, 200, 200)),
-            ("",                                self.font_text,  (200, 200, 200)),
-            ("Left click    – place / remove cell",  self.font_text,  (200, 200, 200)),
-            ("Hold righ button and drag    – move the grid",  self.font_text,  (200, 200, 200)),
-            ("Space        – pause / resume",        self.font_text,  (200, 200, 200)),
-            ("↑ / ↓           – speed up / slow down",  self.font_text,  (200, 200, 200)),
-            ("R               – clear the grid and return to start",        self.font_text,  (200, 200, 200)),
-            ("M               – to swap between light and dark mode (only when paused)",        self.font_text,  (200, 200, 200)),
-            ("Press any key or click to start", self.font_text,  (255, 220, 50)),
-        ]
+        self._font_title = font.SysFont("Arial", 28, bold=True)
+        self._font_text  = font.SysFont("Arial", 18)
 
         # pre-render surfaces so draw() is fast
         self.rendered = [
-            (font.render(text, True, color), font.get_height())
-            for text, font, color in self.lines
+            ( (self._font_title if style == "title" else self._font_text)
+                .render(text, True, color),
+                (self._font_title if style == "title" else self._font_text)
+                .get_height(), )
+            for text, style, color in self.lines
         ]
     
     def draw(self, screen : Surface) -> None:
