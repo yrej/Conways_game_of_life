@@ -101,7 +101,13 @@ python main.py
 |---|---|
 | `Space` | Pauza / Spuštění simulace |
 | `↑` / `↓` | Zvýšení / snížení rychlosti |
-| `C` | Vymazání plochy |
+| `R` | Resetování plochy |
+| `M` | Změna mezi světlým a tmavým módem |
+| `I` | Vypíše nápovědu na obrazovku |
+| `1` | Vykreslí glider směrující doprava |
+| `2` | Vykreslí glider směrující doleva  |
+| `3` | Vykreslí block |
+| `4` | Vykreslí blinker |
 |`Esc` | Ukončení aplikace |
  
 ---
